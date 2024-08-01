@@ -1,7 +1,6 @@
 package com.dcsuibian.jredis;
 
-public class Main {
+public class MainTests {
     public static void main(String[] args) {
-        System.out.println("Hello JRedis!!!");
     }
 }
