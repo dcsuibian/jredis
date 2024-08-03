@@ -6,7 +6,15 @@ import lombok.Setter;
 @Getter
 @Setter
 public class LinkedList<T> {
-    private LinkedListNode<T> head;
-    private LinkedListNode<T> tail;
+    @Getter
+    @Setter
+    public static class Node<T> {
+        private Node<T> prev;
+        private Node<T> next;
+        private T value;
+    }
+
+    private Node<T> head;
+    private Node<T> tail;
     private long length;
 }
