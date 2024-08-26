@@ -1,0 +1,13 @@
+{
+  "name": "jredis-utils",
+  "version": "0.0.1",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "dcsuibian",
+  "devDependencies": {
+    "@types/node": "^22.5.0",
+    "prettier": "3.3.3"
+  }
+}
