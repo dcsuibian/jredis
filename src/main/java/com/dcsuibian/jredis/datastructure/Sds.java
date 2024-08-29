@@ -3,6 +3,8 @@ package com.dcsuibian.jredis.datastructure;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.nio.charset.Charset;
+
 /**
  * Simple Dynamic String
  */
@@ -18,18 +20,25 @@ public class Sds {
         length = 0;
     }
 
-    public Sds(String value) {
-        this.value = value.getBytes();
-        length = this.value.length;
+    public Sds(byte[] value) {
+        this.value = new byte[value.length];
+        System.arraycopy(value, 0, this.value, 0, value.length);
+        length = value.length;
     }
 
-    public Sds(byte[] value) {
-        this.value = value;
-        length = value.length;
+    public Sds(String value, Charset charset) {
+        this.value = value.getBytes(charset);
+        length = this.value.length;
     }
 
     public int getAvailable() {
         return value.length - length;
+    }
+
+    public byte[] getData() {
+        byte[] data = new byte[length];
+        System.arraycopy(value, 0, data, 0, length);
+        return data;
     }
 
     @Override
@@ -58,9 +67,7 @@ public class Sds {
         return hash;
     }
 
-
-    @Override
-    public String toString() {
-        return new String(value, 0, length);
+    public String toString(Charset charset) {
+        return new String(value, 0, length, charset);
     }
 }

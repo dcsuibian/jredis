@@ -33,8 +33,8 @@ public class ListPackTests {
     public void testPrepend() {
         listPack.append("world".getBytes());
         listPack.prepend("hello".getBytes());
-        assertEquals("hello", listPack.getString(0));
-        assertEquals("world", listPack.getString(1));
+        assertEquals("hello", new String(listPack.getStringValue(0)));
+        assertEquals("world", new String(listPack.getStringValue(1)));
     }
 
     @Test

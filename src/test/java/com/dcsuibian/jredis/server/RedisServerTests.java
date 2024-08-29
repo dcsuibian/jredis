@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 public class RedisServerTests {
     @Test
     void testStartAndStop() {
-        RedisServer server = new RedisServer();
+        RedisServer server = new RedisServer(16379);
         server.start();
         server.stop();
     }

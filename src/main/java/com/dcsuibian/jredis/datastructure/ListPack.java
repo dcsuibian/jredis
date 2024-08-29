@@ -611,12 +611,4 @@ public class ListPack {
         }
         return null;
     }
-
-    public String getString(int index) {
-        byte[] result = getStringValue(index);
-        if (null != result) {
-            return new String(result);
-        }
-        return null;
-    }
 }
