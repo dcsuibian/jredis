@@ -3,9 +3,7 @@ package com.dcsuibian.jredis.datastructure;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Dictionary<K, V> {
     private static final byte DICTIONARY_INITIAL_SIZE_EXP = 2;
@@ -247,6 +245,32 @@ public class Dictionary<K, V> {
         return null;
     }
 
+    public Set<K> keySet() {
+        Set<K> keySet = new LinkedHashSet<>();
+        for (int tableIndex = 0; tableIndex <= 1; tableIndex++) {
+            for (Entry<K, V> entry : tables.get(tableIndex)) {
+                while (null != entry) {
+                    keySet.add(entry.key);
+                    entry = entry.next;
+                }
+            }
+        }
+        return keySet;
+    }
+
+    public Set<Entry<K, V>> entrySet() {
+        Set<Entry<K, V>> entrySet = new LinkedHashSet<>();
+        for (int tableIndex = 0; tableIndex <= 1; tableIndex++) {
+            for (Entry<K, V> entry : tables.get(tableIndex)) {
+                while (null != entry) {
+                    entrySet.add(entry);
+                    entry = entry.next;
+                }
+            }
+        }
+        return entrySet;
+    }
+
     public void clear() {
         tableReset(0);
         tableReset(1);
@@ -265,5 +289,4 @@ public class Dictionary<K, V> {
             rehash(1);
         }
     }
-
 }

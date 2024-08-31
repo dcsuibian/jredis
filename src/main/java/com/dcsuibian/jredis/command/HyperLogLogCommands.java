@@ -11,7 +11,7 @@ import io.netty.channel.ChannelHandlerContext;
 public class HyperLogLogCommands {
     public static void pfaddCommand(RedisClient client) {
         byte[][] args = client.getArgs();
-        Sds key = new Sds(args[0]);
+        Sds key = new Sds(args[1]);
         Dictionary<Sds, RedisObject> dictionary = client.getDatabase().getDictionary();
         RedisObject o = dictionary.get(key);
         int update = 0;
