@@ -5,10 +5,14 @@ import com.dcsuibian.jredis.server.RedisClient;
 import io.netty.channel.ChannelHandlerContext;
 
 public class StringCommands {
-    public static void getCommand(RedisClient client) {
+    private static void getGenericCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
+    }
+
+    public static void getCommand(RedisClient client) {
+        getGenericCommand(client);
     }
 
     public static void setCommand(RedisClient client) {

@@ -192,6 +192,27 @@ public class Dictionary<K, V> {
         return null;
     }
 
+    public boolean containsKey(K key) {
+        if (isRehashing()) {
+            rehashStep();
+        }
+        int hash = key.hashCode();
+        for (int tableIndex = 0; tableIndex <= 1; tableIndex++) {
+            int index = hash & dictionarySizeMask(sizeExp[tableIndex]);
+            Entry<K, V> entry = tables.get(tableIndex).get(index);
+            while (null != entry) {
+                if (entry.key.equals(key)) {
+                    return true;
+                }
+                entry = entry.next;
+            }
+            if (!isRehashing()) {
+                break;
+            }
+        }
+        return false;
+    }
+
     public int size() {
         return used[0] + used[1];
     }
