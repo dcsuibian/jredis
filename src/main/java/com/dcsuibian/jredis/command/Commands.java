@@ -127,11 +127,27 @@ public class Commands {
         redisCommands.add(command);
 
         command = new RedisCommand();
+        command.setSummary("Get the length of a list");
+        command.setComplexity("O(1)");
+        command.setSince("1.0.0");
+        command.setDeclaredName(new Sds("llen", StandardCharsets.UTF_8));
+        command.setProcessor(ListCommands::llenCommand);
+        redisCommands.add(command);
+
+        command = new RedisCommand();
         command.setSummary("Prepend one or multiple elements to a list");
         command.setComplexity("O(1) for each element added, so O(N) to add N elements when the command is called with multiple arguments.");
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("lpush", StandardCharsets.UTF_8));
         command.setProcessor(ListCommands::lpushCommand);
+        redisCommands.add(command);
+
+        command = new RedisCommand();
+        command.setSummary("Prepend an element to a list, only if the list exists");
+        command.setComplexity("O(1) for each element added, so O(N) to add N elements when the command is called with multiple arguments.");
+        command.setSince("2.2.0");
+        command.setDeclaredName(new Sds("lpushx", StandardCharsets.UTF_8));
+        command.setProcessor(ListCommands::lpushxCommand);
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -196,6 +212,14 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("rpush", StandardCharsets.UTF_8));
         command.setProcessor(ListCommands::rpushCommand);
+        redisCommands.add(command);
+
+        command = new RedisCommand();
+        command.setSummary("Append an element to a list, only if the list exists");
+        command.setComplexity("O(1) for each element added, so O(N) to add N elements when the command is called with multiple arguments.");
+        command.setSince("2.2.0");
+        command.setDeclaredName(new Sds("rpushx", StandardCharsets.UTF_8));
+        command.setProcessor(ListCommands::rpushxCommand);
         redisCommands.add(command);
 
         command = new RedisCommand();

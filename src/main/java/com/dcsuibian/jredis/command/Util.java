@@ -1,10 +1,14 @@
 package com.dcsuibian.jredis.command;
 
+import com.dcsuibian.jredis.datastructure.LongContainer;
 import com.dcsuibian.jredis.datastructure.Sds;
+import com.dcsuibian.jredis.network.RespObject;
 import com.dcsuibian.jredis.network.resp2.RespSimpleError;
 import com.dcsuibian.jredis.server.RedisClient;
 import com.dcsuibian.jredis.server.RedisDatabase;
 import com.dcsuibian.jredis.server.RedisObject;
+
+import java.nio.charset.StandardCharsets;
 
 public class Util {
     public static final int LOOKUP_NONE = 0;
@@ -37,12 +41,36 @@ public class Util {
         return value;
     }
 
+    public static RedisObject lookupKeyReadWithFlags(RedisDatabase db, byte[] key, int flags) {
+        return lookupKey(db, key, flags);
+    }
+
+    public static RedisObject lookupKeyRead(RedisDatabase db, byte[] key) {
+        return lookupKeyReadWithFlags(db, key, LOOKUP_NONE);
+    }
+
+    public static RedisObject lookupKeyReadOrReply(RedisClient c, byte[] key, RespObject reply) {
+        RedisObject o = lookupKeyRead(c.getDatabase(), key);
+        if (null == o) {
+            c.getChannelHandlerContext().writeAndFlush(reply);
+        }
+        return o;
+    }
+
     public static RedisObject lookupKeyWriteWithFlags(RedisDatabase db, byte[] key, int flags) {
         return lookupKey(db, key, flags | LOOKUP_WRITE);
     }
 
     public static RedisObject lookupKeyWrite(RedisDatabase db, byte[] key) {
         return lookupKeyWriteWithFlags(db, key, LOOKUP_NONE);
+    }
+
+    public static RedisObject lookupKeyWriteOrReply(RedisClient c, byte[] key, RespObject reply) {
+        RedisObject o = lookupKeyWrite(c.getDatabase(), key);
+        if (null == o) {
+            c.getChannelHandlerContext().writeAndFlush(reply);
+        }
+        return o;
     }
 
     public static long getExpire(RedisDatabase db, byte[] key) {
@@ -91,4 +119,16 @@ public class Util {
         return false;
     }
 
+    public static boolean getLongFromBytesOrReply(RedisClient c, byte[] bytes, LongContainer target, String message) {
+        try {
+            target.setValue(Long.parseLong(new String(bytes, StandardCharsets.UTF_8)));
+            return true;
+        } catch (NumberFormatException e) {
+            if (null == message) {
+                message = "value is not an integer or out of range";
+            }
+            c.getChannelHandlerContext().writeAndFlush(new RespSimpleError(message.getBytes(StandardCharsets.UTF_8)));
+            return false;
+        }
+    }
 }

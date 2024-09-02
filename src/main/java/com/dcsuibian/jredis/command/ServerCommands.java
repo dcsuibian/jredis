@@ -10,7 +10,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class ServerCommands {
-    public static void infoCommand(RedisClient client) {
+    public static void infoCommand(RedisClient c) {
         List<String> lines = new ArrayList<>();
         lines.add("# Server");
         lines.add("redis_version:jredis");
@@ -19,13 +19,13 @@ public class ServerCommands {
         for (String line : lines) {
             sb.append(line).append("\r\n");
         }
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(new RespBulkString(sb.toString().getBytes(StandardCharsets.UTF_8)));
     }
 
-    public static void configCommand(RedisClient client) {
+    public static void configCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 }

@@ -11,49 +11,49 @@ public class StringCommands {
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void getCommand(RedisClient client) {
-        getGenericCommand(client);
+    public static void getCommand(RedisClient c) {
+        getGenericCommand(c);
     }
 
-    public static void setCommand(RedisClient client) {
+    public static void setCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void setnxCommand(RedisClient client) {
+    public static void setnxCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void setexCommand(RedisClient client) {
+    public static void setexCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void msetCommand(RedisClient client) {
+    public static void msetCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void mgetCommand(RedisClient client) {
+    public static void mgetCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void incrCommand(RedisClient client) {
+    public static void incrCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void decrCommand(RedisClient client) {
+    public static void decrCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 }

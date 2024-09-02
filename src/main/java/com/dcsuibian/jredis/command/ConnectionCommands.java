@@ -8,36 +8,36 @@ import io.netty.channel.ChannelHandlerContext;
 import java.nio.charset.StandardCharsets;
 
 public class ConnectionCommands {
-    public static void pingCommand(RedisClient client) {
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+    public static void pingCommand(RedisClient c) {
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         RespSimpleString reply = new RespSimpleString("PONG".getBytes(StandardCharsets.UTF_8));
         ctx.writeAndFlush(reply);
     }
 
-    public static void quitCommand(RedisClient client) {
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+    public static void quitCommand(RedisClient c) {
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
         ctx.close();
     }
 
-    public static void authCommand(RedisClient client) {
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+    public static void authCommand(RedisClient c) {
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         // TODO verify password
-        client.setAuthenticated(true);
+        c.setAuthenticated(true);
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void clientCommand(RedisClient client) {
+    public static void clientCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void selectCommand(RedisClient client) {
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
-        int index = Integer.parseInt(new String(client.getArgs()[1], StandardCharsets.UTF_8));
-        RedisServer server = client.getServer();
-        client.setDatabase(server.getDatabases()[index]);
+    public static void selectCommand(RedisClient c) {
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
+        int index = Integer.parseInt(new String(c.getArgs()[1], StandardCharsets.UTF_8));
+        RedisServer server = c.getServer();
+        c.setDatabase(server.getDatabases()[index]);
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 }

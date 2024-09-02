@@ -1,18 +1,23 @@
 package com.dcsuibian.jredis.datastructure;
 
-import lombok.Getter;
-import lombok.Setter;
+import java.util.LinkedList;
 
-public class QuickList<T> {
-    @Getter
-    @Setter
-    public static class Node<T> {
-        private Node<T> prev;
-        private Node<T> next;
+public class QuickList {
+    private final LinkedList<byte[]> content;
+
+    public QuickList() {
+        content = new LinkedList<>();
     }
 
-    private Node<T> head;
-    private Node<T> tail;
-    private long count;
-    private long length;
+    public void addHead(byte[] value) {
+        content.addFirst(value);
+    }
+
+    public void addTail(byte[] value) {
+        content.addLast(value);
+    }
+
+    public int size() {
+        return content.size();
+    }
 }

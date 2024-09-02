@@ -11,38 +11,88 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.nio.charset.StandardCharsets;
 
-import static com.dcsuibian.jredis.command.Util.isWrongType;
-import static com.dcsuibian.jredis.command.Util.lookupKeyWrite;
+import static com.dcsuibian.jredis.command.Util.*;
 
 public class SetCommands {
-    public static void sscanCommand(RedisClient client) {
+    public static void sscanCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void sremCommand(RedisClient client) {
-        // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
-        ctx.writeAndFlush(RespSimpleString.OK);
+    public static void sremCommand(RedisClient c) {
+        RedisObject set;
+        if (null == (set = lookupKeyWriteOrReply(c, c.getArgs()[1], RespInteger.ZERO)) || isWrongType(c, set, RedisObject.Type.SET)) {
+            return;
+        }
+        int deleted = 0;
+        boolean keyRemoved = false;
+        for (int i = 2; i < c.getArgs().length; i++) {
+            if (setTypeRemove(set, c.getArgs()[i])) {
+                deleted++;
+                if (0 == setTypeSize(set)) {
+                    Sds key = new Sds(c.getArgs()[1]);
+                    c.getDatabase().getDictionary().remove(key);
+                    c.getDatabase().getExpires().remove(key);
+                    keyRemoved = true;
+                    break;
+                }
+            }
+        }
+        c.getChannelHandlerContext().writeAndFlush(new RespInteger(deleted));
     }
 
-    public static void saddCommand(RedisClient client) {
-        RedisObject set = lookupKeyWrite(client.getDatabase(), client.getArgs()[1]);
-        if (isWrongType(client, set, RedisObject.Type.SET)) {
+    private static boolean setTypeRemove(RedisObject setObj, byte[] value) {
+        if (RedisObject.Encoding.DICTIONARY == setObj.getEncoding()) {
+            Dictionary<Sds, Object> dict = (Dictionary<Sds, Object>) setObj.getValue();
+            Sds key = new Sds(value);
+            if (dict.containsKey(key)) {
+                dict.remove(key);
+                dict.resize(); // TODO: resize when needed
+                return true;
+            } else {
+                return false;
+            }
+        } else if (RedisObject.Encoding.INT_SET == setObj.getEncoding()) {
+            IntSet intSet = (IntSet) setObj.getValue();
+            try {
+                long longValue = Long.parseLong(new String(value, StandardCharsets.UTF_8));
+                return intSet.remove(longValue);
+            } catch (NumberFormatException e) {
+                return false;
+            }
+        } else {
+            throw new RuntimeException("Unknown set encoding");
+        }
+    }
+
+
+    private static int setTypeSize(RedisObject set) {
+        if (RedisObject.Encoding.DICTIONARY == set.getEncoding()) {
+            return ((Dictionary<Sds, Object>) set.getValue()).size();
+        } else if (RedisObject.Encoding.INT_SET == set.getEncoding()) {
+            return ((IntSet) set.getValue()).size();
+        } else {
+            throw new RuntimeException("Unknown set encoding");
+        }
+    }
+
+    public static void saddCommand(RedisClient c) {
+        RedisObject set = lookupKeyWrite(c.getDatabase(), c.getArgs()[1]);
+        if (isWrongType(c, set, RedisObject.Type.SET)) {
             return;
         }
         if (null == set) {
-            set = setTypeCreate(client.getArgs()[2]);
-            client.getDatabase().getDictionary().put(new Sds(client.getArgs()[1]), set);
+            set = setTypeCreate(c.getArgs()[2]);
+            c.getDatabase().getDictionary().put(new Sds(c.getArgs()[1]), set);
         }
         int added = 0;
-        for (int i = 2; i < client.getArgs().length; i++) {
-            if (setTypeAdd(set, client.getArgs()[i])) {
+        for (int i = 2; i < c.getArgs().length; i++) {
+            if (setTypeAdd(set, c.getArgs()[i])) {
                 added++;
             }
         }
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(new RespInteger(added));
     }
 

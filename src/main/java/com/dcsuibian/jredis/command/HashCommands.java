@@ -5,21 +5,21 @@ import com.dcsuibian.jredis.server.RedisClient;
 import io.netty.channel.ChannelHandlerContext;
 
 public class HashCommands {
-    public static void hsetCommand(RedisClient client) {
+    public static void hsetCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void hscanCommand(RedisClient client) {
+    public static void hscanCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void hdelCommand(RedisClient client) {
+    public static void hdelCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 }

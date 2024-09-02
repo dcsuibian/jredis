@@ -9,10 +9,10 @@ import com.dcsuibian.jredis.server.RedisObject;
 import io.netty.channel.ChannelHandlerContext;
 
 public class HyperLogLogCommands {
-    public static void pfaddCommand(RedisClient client) {
-        byte[][] args = client.getArgs();
+    public static void pfaddCommand(RedisClient c) {
+        byte[][] args = c.getArgs();
         Sds key = new Sds(args[1]);
-        Dictionary<Sds, RedisObject> dictionary = client.getDatabase().getDictionary();
+        Dictionary<Sds, RedisObject> dictionary = c.getDatabase().getDictionary();
         RedisObject o = dictionary.get(key);
         int update = 0;
         if (null == o) {
@@ -27,7 +27,7 @@ public class HyperLogLogCommands {
                 update++;
             }
         }
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(new RespInteger(update > 0 ? 1 : 0));
     }
 }

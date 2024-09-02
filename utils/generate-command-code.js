@@ -39,6 +39,9 @@ const SUPPORTED_COMMANDS = [
   'mset',
   'mget',
   'pfadd',
+  'lpushx',
+  'rpushx',
+  'llen',
 ]
 
 const GROUPS = {

@@ -16,13 +16,19 @@ import java.util.List;
 import java.util.Set;
 
 public class GenericCommands {
-    public static void scanCommand(RedisClient client) {
+    public static void scanGenericCommand(RedisClient c, RedisObject o, long cursor) {
+        // TODO implement
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
+        ctx.writeAndFlush(RespSimpleString.OK);
+    }
+
+    public static void scanCommand(RedisClient c) {
         // TODO Return the queried keys, not all keys
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         List<RespObject> list = new ArrayList<>();
         list.add(new RespBulkString("0".getBytes(StandardCharsets.UTF_8)));
         List<RespObject> keyList = new ArrayList<>();
-        for (Sds key : client.getDatabase().getDictionary().keySet()) {
+        for (Sds key : c.getDatabase().getDictionary().keySet()) {
             keyList.add(new RespBulkString(key.getData()));
         }
         list.add(new RespArray(keyList.toArray(new RespObject[0])));
@@ -30,16 +36,16 @@ public class GenericCommands {
         ctx.writeAndFlush(respArray);
     }
 
-    public static void ttlCommand(RedisClient client) {
+    public static void ttlCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void typeCommand(RedisClient client) {
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+    public static void typeCommand(RedisClient c) {
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         String type;
-        RedisObject o = client.getDatabase().getDictionary().get(new Sds(client.getArgs()[1]));
+        RedisObject o = c.getDatabase().getDictionary().get(new Sds(c.getArgs()[1]));
         if (null == o) {
             type = "none";
         } else {
@@ -69,27 +75,27 @@ public class GenericCommands {
         ctx.writeAndFlush(new RespBulkString(type.getBytes(StandardCharsets.UTF_8)));
     }
 
-    public static void keysCommand(RedisClient client) {
+    public static void keysCommand(RedisClient c) {
         // TODO Return the queried keys, not all keys
-        Set<Sds> keySet = client.getDatabase().getDictionary().keySet();
+        Set<Sds> keySet = c.getDatabase().getDictionary().keySet();
         List<RespObject> list = new ArrayList<>();
         for (Sds key : keySet) {
             list.add(new RespBulkString(key.getData()));
         }
         RespArray respArray = new RespArray(list.toArray(new RespObject[0]));
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(respArray);
     }
 
-    public static void expireCommand(RedisClient client) {
+    public static void expireCommand(RedisClient c) {
         // TODO implement
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
-    public static void existsCommand(RedisClient client) {
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
-        boolean exists = client.getDatabase().getDictionary().get(new Sds(client.getArgs()[1])) != null;
+    public static void existsCommand(RedisClient c) {
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
+        boolean exists = c.getDatabase().getDictionary().get(new Sds(c.getArgs()[1])) != null;
         if (exists) {
             ctx.writeAndFlush(RespInteger.ONE);
         } else {
@@ -97,9 +103,9 @@ public class GenericCommands {
         }
     }
 
-    public static void delCommand(RedisClient client) {
-        ChannelHandlerContext ctx = client.getChannelHandlerContext();
-        client.getDatabase().getDictionary().remove(new Sds(client.getArgs()[1]));
+    public static void delCommand(RedisClient c) {
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
+        c.getDatabase().getDictionary().remove(new Sds(c.getArgs()[1]));
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 }
