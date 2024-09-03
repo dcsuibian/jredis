@@ -7,6 +7,7 @@ import java.nio.charset.StandardCharsets;
 @Getter
 public class RespSimpleError extends Resp2Object {
     public static final RespSimpleError WRONG_TYPE = new RespSimpleError("WRONGTYPE Operation against a key holding the wrong kind of value".getBytes(StandardCharsets.UTF_8));
+    public static final RespSimpleError SYNTAX = new RespSimpleError("ERR syntax error".getBytes(StandardCharsets.UTF_8));
     private final byte[] value;
 
     public RespSimpleError(byte[] value) {

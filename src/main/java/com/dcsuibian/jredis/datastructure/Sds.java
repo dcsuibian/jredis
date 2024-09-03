@@ -8,7 +8,8 @@ import java.nio.charset.Charset;
 /**
  * Simple Dynamic String
  */
-public class Sds {
+public class Sds implements Comparable<Sds> {
+
     private static final int SDS_MAX_PREALLOCATE = 1024 * 1024; // 1MB
     private byte[] value;
     @Getter
@@ -69,5 +70,16 @@ public class Sds {
 
     public String toString(Charset charset) {
         return new String(value, 0, length, charset);
+    }
+
+    @Override
+    public int compareTo(Sds o) {
+        int minLength = Math.min(length, o.length);
+        for (int i = 0; i < minLength; i++) {
+            if (value[i] != o.value[i]) {
+                return Byte.compare(value[i], o.value[i]);
+            }
+        }
+        return Integer.compare(length, o.length);
     }
 }

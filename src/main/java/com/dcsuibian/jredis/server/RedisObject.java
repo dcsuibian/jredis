@@ -2,6 +2,7 @@ package com.dcsuibian.jredis.server;
 
 import com.dcsuibian.jredis.datastructure.HyperLogLog;
 import com.dcsuibian.jredis.datastructure.QuickList;
+import com.dcsuibian.jredis.datastructure.ZSet;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -13,7 +14,7 @@ public class RedisObject {
     }
 
     public enum Encoding {
-        SDS, INTEGER, DICTIONARY, LINKED_LIST, INT_SET, STREAM, LIST_PACK, HYPER_LOG_LOG, QUICK_LIST
+        SDS, INTEGER, DICTIONARY, LINKED_LIST, INT_SET, STREAM, LIST_PACK, HYPER_LOG_LOG, QUICK_LIST, SKIP_LIST
     }
 
     private Type type;
@@ -34,5 +35,11 @@ public class RedisObject {
         this.type = Type.LIST;
         this.encoding = Encoding.QUICK_LIST;
         this.value = quickList;
+    }
+
+    public RedisObject(ZSet zSet) {
+        this.type = Type.Z_SET;
+        this.encoding = Encoding.SKIP_LIST;
+        this.value = zSet;
     }
 }
