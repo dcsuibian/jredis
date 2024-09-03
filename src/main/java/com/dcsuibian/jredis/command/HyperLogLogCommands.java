@@ -1,33 +1,30 @@
 package com.dcsuibian.jredis.command;
 
-import com.dcsuibian.jredis.datastructure.Dictionary;
 import com.dcsuibian.jredis.datastructure.HyperLogLog;
-import com.dcsuibian.jredis.datastructure.Sds;
-import com.dcsuibian.jredis.network.resp2.RespInteger;
 import com.dcsuibian.jredis.server.RedisClient;
 import com.dcsuibian.jredis.server.RedisObject;
-import io.netty.channel.ChannelHandlerContext;
+import com.dcsuibian.jredis.server.SharedObjects;
+
+import static com.dcsuibian.jredis.util.DatabaseUtil.dbAdd;
+import static com.dcsuibian.jredis.util.DatabaseUtil.lookupKeyWrite;
+import static com.dcsuibian.jredis.util.NetworkUtil.addReply;
 
 public class HyperLogLogCommands {
     public static void pfaddCommand(RedisClient c) {
-        byte[][] args = c.getArgs();
-        Sds key = new Sds(args[1]);
-        Dictionary<Sds, RedisObject> dictionary = c.getDatabase().getDictionary();
-        RedisObject o = dictionary.get(key);
-        int update = 0;
+        RedisObject o = lookupKeyWrite(c.getDatabase(), c.getArgs()[1]);
+        int updated = 0;
         if (null == o) {
             o = new RedisObject(new HyperLogLog());
-            dictionary.put(key, o);
-            update++;
+            dbAdd(c.getDatabase(), c.getArgs()[1], o);
+            updated++;
         }
         HyperLogLog hll = (HyperLogLog) o.getValue();
-        for (int i = 2; i < args.length; i++) {
-            byte[] element = args[i];
+        for (int i = 2; i < c.getArgs().length; i++) {
+            byte[] element = c.getArgs()[i];
             if (hll.add(element)) {
-                update++;
+                updated++;
             }
         }
-        ChannelHandlerContext ctx = c.getChannelHandlerContext();
-        ctx.writeAndFlush(new RespInteger(update > 0 ? 1 : 0));
+        addReply(c, updated != 0 ? SharedObjects.ONE : SharedObjects.ZERO);
     }
 }

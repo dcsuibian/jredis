@@ -19,6 +19,7 @@ import lombok.extern.slf4j.Slf4j;
 @Setter
 @Getter
 public class RedisServer {
+    public static final ThreadLocal<RedisServer> THREAD_LOCAL = new ThreadLocal<>();
     private volatile boolean running = false;
     private final int port;
     private RedisDatabase[] databases;

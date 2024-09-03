@@ -10,7 +10,10 @@ import com.dcsuibian.jredis.server.RedisClient;
 import com.dcsuibian.jredis.server.RedisObject;
 import io.netty.channel.ChannelHandlerContext;
 
-import static com.dcsuibian.jredis.command.Util.*;
+import static com.dcsuibian.jredis.util.DatabaseUtil.lookupKeyReadOrReply;
+import static com.dcsuibian.jredis.util.DatabaseUtil.lookupKeyWrite;
+import static com.dcsuibian.jredis.util.ObjectUtil.getLongFromBytesOrReply;
+import static com.dcsuibian.jredis.util.ObjectUtil.isWrongType;
 
 public class ListCommands {
     public static final int LIST_HEAD = 0;

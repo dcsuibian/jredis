@@ -31,6 +31,7 @@ public class CommandHandler extends ChannelInboundHandlerAdapter {
         RedisClient client = new RedisClient();
         client.setDatabase(redisServer.getDatabases()[0]);
         client.setServer(redisServer);
+        RedisServer.THREAD_LOCAL.set(redisServer);
         ctx.channel().attr(AttributeKey.valueOf("client")).set(client);
     }
 

@@ -11,7 +11,9 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.nio.charset.StandardCharsets;
 
-import static com.dcsuibian.jredis.command.Util.*;
+import static com.dcsuibian.jredis.util.DatabaseUtil.lookupKeyWrite;
+import static com.dcsuibian.jredis.util.DatabaseUtil.lookupKeyWriteOrReply;
+import static com.dcsuibian.jredis.util.ObjectUtil.isWrongType;
 
 public class SetCommands {
     public static void sscanCommand(RedisClient c) {
