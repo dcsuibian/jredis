@@ -1,4 +1,4 @@
-package com.dcsuibian.jredis.version;
+package com.dcsuibian.jredis.config;
 
 public class Version {
     public static final String REDIS_VERSION = "7.0.5";

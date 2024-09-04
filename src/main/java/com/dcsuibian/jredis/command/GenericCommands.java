@@ -1,6 +1,8 @@
 package com.dcsuibian.jredis.command;
 
-import com.dcsuibian.jredis.datastructure.*;
+import com.dcsuibian.jredis.datastructure.IntContainer;
+import com.dcsuibian.jredis.datastructure.LongContainer;
+import com.dcsuibian.jredis.datastructure.Sds;
 import com.dcsuibian.jredis.network.RespObject;
 import com.dcsuibian.jredis.network.resp2.RespArray;
 import com.dcsuibian.jredis.network.resp2.RespBulkString;
@@ -31,55 +33,59 @@ public class GenericCommands {
     }
 
     public static void scanGenericCommand(RedisClient c, RedisObject o, long cursor) {
-        LongContainer count = new LongContainer(10);
-        Sds typeName = null;
-        assert null == o || RedisObject.Type.SET == o.getType() || RedisObject.Type.HASH == o.getType() || RedisObject.Type.Z_SET == o.getType();
-        int i = (null == o) ? 2 : 3;
-        while (i < c.getArgs().length) {
-            int j = c.getArgs().length - i;
-            if (new String(c.getArgs()[i], StandardCharsets.UTF_8).equalsIgnoreCase("count") && j >= 2) {
-                if (!getLongFromBytesOrReply(c, c.getArgs()[i + 1], count, null)) {
-                    scanGenericCommandCleanUp();
-                    return;
-                }
-                if (count.getValue() < 1) {
-                    addErrorReply(c, SharedObjects.SYNTAX_ERROR);
-                    scanGenericCommandCleanUp();
-                    return;
-                }
-                i += 2;
-            } else if (new String(c.getArgs()[i], StandardCharsets.UTF_8).equalsIgnoreCase("match") && j >= 2) {
-                // TODO implement
-            } else if (new String(c.getArgs()[i], StandardCharsets.UTF_8).equalsIgnoreCase("type") && null == o && j >= 2) {
-                typeName = new Sds(c.getArgs()[i + 1]);
-                i += 2;
-            } else {
-                addErrorReply(c, SharedObjects.SYNTAX_ERROR);
-                scanGenericCommandCleanUp();
-                return;
-            }
-            Dictionary<?, ?> dict = null;
-            if (null == o) {
-                dict = c.getDatabase().getDictionary();
-            } else if (RedisObject.Type.SET == o.getType() && RedisObject.Encoding.DICTIONARY == o.getEncoding()) {
-                dict = (Dictionary<?, ?>) o.getValue();
-            } else if (RedisObject.Type.HASH == o.getType() && RedisObject.Encoding.DICTIONARY == o.getEncoding()) {
-                dict = (Dictionary<?, ?>) o.getValue();
-            } else if (RedisObject.Type.Z_SET == o.getType() && RedisObject.Encoding.SKIP_LIST == o.getEncoding()) {
-                ZSet zSet = (ZSet) o.getValue();
-                dict = zSet.getDictionary();
-                count.setValue(count.getValue() * 2);
-            }
-            if (null != dict) {
-
-            } else if (RedisObject.Type.SET == o.getType()) {
-
-            } else if (RedisObject.Type.HASH == o.getType() || RedisObject.Type.Z_SET == o.getType()) {
-
-            } else {
-                throw new RuntimeException("Not handled encoding in SCAN.");
-            }
-        }
+        // TODO implement
+        ChannelHandlerContext ctx = c.getChannelHandlerContext();
+        ctx.writeAndFlush(RespSimpleString.OK);
+        return;
+//        LongContainer count = new LongContainer(10);
+//        Sds typeName = null;
+//        assert null == o || RedisObject.Type.SET == o.getType() || RedisObject.Type.HASH == o.getType() || RedisObject.Type.Z_SET == o.getType();
+//        int i = (null == o) ? 2 : 3;
+//        while (i < c.getArgs().length) {
+//            int j = c.getArgs().length - i;
+//            if (new String(c.getArgs()[i], StandardCharsets.UTF_8).equalsIgnoreCase("count") && j >= 2) {
+//                if (!getLongFromBytesOrReply(c, c.getArgs()[i + 1], count, null)) {
+//                    scanGenericCommandCleanUp();
+//                    return;
+//                }
+//                if (count.getValue() < 1) {
+//                    addErrorReply(c, SharedObjects.SYNTAX_ERROR);
+//                    scanGenericCommandCleanUp();
+//                    return;
+//                }
+//                i += 2;
+//            } else if (new String(c.getArgs()[i], StandardCharsets.UTF_8).equalsIgnoreCase("match") && j >= 2) {
+//                // TODO implement
+//            } else if (new String(c.getArgs()[i], StandardCharsets.UTF_8).equalsIgnoreCase("type") && null == o && j >= 2) {
+//                typeName = new Sds(c.getArgs()[i + 1]);
+//                i += 2;
+//            } else {
+//                addErrorReply(c, SharedObjects.SYNTAX_ERROR);
+//                scanGenericCommandCleanUp();
+//                return;
+//            }
+//            Dictionary<?, ?> dict = null;
+//            if (null == o) {
+//                dict = c.getDatabase().getDictionary();
+//            } else if (RedisObject.Type.SET == o.getType() && RedisObject.Encoding.DICTIONARY == o.getEncoding()) {
+//                dict = (Dictionary<?, ?>) o.getValue();
+//            } else if (RedisObject.Type.HASH == o.getType() && RedisObject.Encoding.DICTIONARY == o.getEncoding()) {
+//                dict = (Dictionary<?, ?>) o.getValue();
+//            } else if (RedisObject.Type.Z_SET == o.getType() && RedisObject.Encoding.SKIP_LIST == o.getEncoding()) {
+//                ZSet zSet = (ZSet) o.getValue();
+//                dict = zSet.getDictionary();
+//                count.setValue(count.getValue() * 2);
+//            }
+//            if (null != dict) {
+//
+//            } else if (RedisObject.Type.SET == o.getType()) {
+//
+//            } else if (RedisObject.Type.HASH == o.getType() || RedisObject.Type.Z_SET == o.getType()) {
+//
+//            } else {
+//                throw new RuntimeException("Not handled encoding in SCAN.");
+//            }
+//        }
     }
 
     public static void scanCommand(RedisClient c) {

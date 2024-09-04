@@ -2,6 +2,8 @@ package com.dcsuibian.jredis;
 
 import com.dcsuibian.jredis.server.RedisServer;
 
+import java.io.InputStream;
+
 public class JRedisServer {
     private final RedisServer redisServer;
 
@@ -9,8 +11,12 @@ public class JRedisServer {
         this.redisServer = new RedisServer();
     }
 
-    public JRedisServer(int port) {
-        this.redisServer = new RedisServer(port);
+    public JRedisServer(String configFileContent) {
+        this.redisServer = new RedisServer(configFileContent);
+    }
+
+    public JRedisServer(InputStream inputStream) {
+        this.redisServer = new RedisServer(inputStream);
     }
 
     public void start() {
