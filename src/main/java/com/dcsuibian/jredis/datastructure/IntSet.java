@@ -5,8 +5,9 @@ import lombok.Getter;
 
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.util.Iterator;
 
-public class IntSet {
+public class IntSet implements Iterable<Long> {
     @Getter
     private Encoding encoding;
     @Getter
@@ -90,6 +91,23 @@ public class IntSet {
     public boolean contains(long value) {
         Encoding valueEncoding = valueEncoding(value);
         return valueEncoding.size <= encoding.size && search(value).exists;
+    }
+
+    @Override
+    public Iterator<Long> iterator() {
+        return new Iterator<Long>() {
+            private int position = 0;
+
+            @Override
+            public boolean hasNext() {
+                return position < length;
+            }
+
+            @Override
+            public Long next() {
+                return get(position++);
+            }
+        };
     }
 
     /**

@@ -3,9 +3,7 @@ package com.dcsuibian.jredis.datastructure;
 import lombok.Getter;
 import lombok.Setter;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
+import java.util.*;
 
 public class Dictionary<K, V> {
     private static final byte DICTIONARY_INITIAL_SIZE_EXP = 2;
@@ -194,6 +192,27 @@ public class Dictionary<K, V> {
         return null;
     }
 
+    public boolean containsKey(K key) {
+        if (isRehashing()) {
+            rehashStep();
+        }
+        int hash = key.hashCode();
+        for (int tableIndex = 0; tableIndex <= 1; tableIndex++) {
+            int index = hash & dictionarySizeMask(sizeExp[tableIndex]);
+            Entry<K, V> entry = tables.get(tableIndex).get(index);
+            while (null != entry) {
+                if (entry.key.equals(key)) {
+                    return true;
+                }
+                entry = entry.next;
+            }
+            if (!isRehashing()) {
+                break;
+            }
+        }
+        return false;
+    }
+
     public int size() {
         return used[0] + used[1];
     }
@@ -247,6 +266,38 @@ public class Dictionary<K, V> {
         return null;
     }
 
+    public Set<K> keySet() {
+        Set<K> keySet = new LinkedHashSet<>();
+        for (int tableIndex = 0; tableIndex <= 1; tableIndex++) {
+            for (Entry<K, V> entry : tables.get(tableIndex)) {
+                while (null != entry) {
+                    keySet.add(entry.key);
+                    entry = entry.next;
+                }
+            }
+        }
+        return keySet;
+    }
+
+    public Set<Entry<K, V>> entrySet() {
+        Set<Entry<K, V>> entrySet = new LinkedHashSet<>();
+        for (int tableIndex = 0; tableIndex <= 1; tableIndex++) {
+            for (Entry<K, V> entry : tables.get(tableIndex)) {
+                while (null != entry) {
+                    entrySet.add(entry);
+                    entry = entry.next;
+                }
+            }
+        }
+        return entrySet;
+    }
+
+    public boolean needsResize() {
+        int slots = slots();
+        int used = size();
+        return (slots > DICTIONARY_INITIAL_SIZE && (used * 100 / slots < 10));
+    }
+
     public void clear() {
         tableReset(0);
         tableReset(1);
@@ -266,4 +317,7 @@ public class Dictionary<K, V> {
         }
     }
 
+    private int slots() {
+        return dictionarySize(sizeExp[0]) + dictionarySize(sizeExp[1]);
+    }
 }
