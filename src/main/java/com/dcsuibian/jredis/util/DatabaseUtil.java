@@ -1,10 +1,15 @@
 package com.dcsuibian.jredis.util;
 
+import com.dcsuibian.jredis.datastructure.LongContainer;
 import com.dcsuibian.jredis.datastructure.Sds;
 import com.dcsuibian.jredis.network.RespObject;
 import com.dcsuibian.jredis.server.RedisClient;
 import com.dcsuibian.jredis.server.RedisDatabase;
 import com.dcsuibian.jredis.server.RedisObject;
+
+import java.nio.charset.StandardCharsets;
+
+import static com.dcsuibian.jredis.util.NetworkUtil.addErrorReply;
 
 public class DatabaseUtil {
     public static final int LOOKUP_NONE = 0;
@@ -110,5 +115,15 @@ public class DatabaseUtil {
     public static void dbAdd(RedisDatabase db, byte[] key, RedisObject value) {
         Sds sds = new Sds(key);
         db.getDictionary().put(sds, value);
+    }
+
+    public static boolean parseScanCursorOrReply(RedisClient c, byte[] bytes, LongContainer cursor) {
+        try {
+            cursor.setValue(Long.parseLong(new String(bytes, StandardCharsets.UTF_8)));
+            return true;
+        } catch (NumberFormatException e) {
+            addErrorReply(c, "invalid cursor");
+            return false;
+        }
     }
 }

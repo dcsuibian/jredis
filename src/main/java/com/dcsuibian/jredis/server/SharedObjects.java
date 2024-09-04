@@ -1,6 +1,8 @@
 package com.dcsuibian.jredis.server;
 
+import com.dcsuibian.jredis.network.RespObject;
 import com.dcsuibian.jredis.network.resp2.*;
+import com.dcsuibian.jredis.network.resp3.RespNull;
 
 public class SharedObjects {
     public static final RespSimpleString OK = RespSimpleString.OK;
@@ -30,4 +32,15 @@ public class SharedObjects {
     public static final RespSimpleError EXEC_ABORT_ERROR = RespSimpleError.EXEC_ABORT;
     public static final RespSimpleError NO_REPLICAS_ERROR = RespSimpleError.NO_REPLICAS;
     public static final RespSimpleError BUSY_KEY_ERROR = RespSimpleError.BUSY_KEY;
+
+    public static final RespObject[] NULL = new RespObject[4];
+    public static final RespObject[] NULL_ARRAY = new RespObject[4];
+
+    static {
+        NULL[2] = RespBulkString.NULL;
+        NULL[3] = RespNull.NULL;
+
+        NULL_ARRAY[2] = RespArray.NULL;
+        NULL_ARRAY[3] = RespNull.NULL;
+    }
 }

@@ -20,6 +20,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("auth", StandardCharsets.UTF_8));
         command.setProcessor(ConnectionCommands::authCommand);
+        command.setFullName(new Sds("AUTH", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -28,6 +29,7 @@ public class Commands {
         command.setSince("2.4.0");
         command.setDeclaredName(new Sds("client", StandardCharsets.UTF_8));
         command.setProcessor(ConnectionCommands::clientCommand);
+        command.setFullName(new Sds("CLIENT", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -36,6 +38,7 @@ public class Commands {
         command.setSince("2.0.0");
         command.setDeclaredName(new Sds("config", StandardCharsets.UTF_8));
         command.setProcessor(ServerCommands::configCommand);
+        command.setFullName(new Sds("CONFIG", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -44,6 +47,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("decr", StandardCharsets.UTF_8));
         command.setProcessor(StringCommands::decrCommand);
+        command.setFullName(new Sds("DECR", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -52,6 +56,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("del", StandardCharsets.UTF_8));
         command.setProcessor(GenericCommands::delCommand);
+        command.setFullName(new Sds("DEL", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -60,6 +65,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("exists", StandardCharsets.UTF_8));
         command.setProcessor(GenericCommands::existsCommand);
+        command.setFullName(new Sds("EXISTS", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -68,6 +74,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("expire", StandardCharsets.UTF_8));
         command.setProcessor(GenericCommands::expireCommand);
+        command.setFullName(new Sds("EXPIRE", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -76,6 +83,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("get", StandardCharsets.UTF_8));
         command.setProcessor(StringCommands::getCommand);
+        command.setFullName(new Sds("GET", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -84,6 +92,7 @@ public class Commands {
         command.setSince("2.0.0");
         command.setDeclaredName(new Sds("hdel", StandardCharsets.UTF_8));
         command.setProcessor(HashCommands::hdelCommand);
+        command.setFullName(new Sds("HDEL", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -92,6 +101,7 @@ public class Commands {
         command.setSince("2.8.0");
         command.setDeclaredName(new Sds("hscan", StandardCharsets.UTF_8));
         command.setProcessor(HashCommands::hscanCommand);
+        command.setFullName(new Sds("HSCAN", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -100,6 +110,7 @@ public class Commands {
         command.setSince("2.0.0");
         command.setDeclaredName(new Sds("hset", StandardCharsets.UTF_8));
         command.setProcessor(HashCommands::hsetCommand);
+        command.setFullName(new Sds("HSET", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -108,6 +119,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("incr", StandardCharsets.UTF_8));
         command.setProcessor(StringCommands::incrCommand);
+        command.setFullName(new Sds("INCR", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -116,6 +128,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("info", StandardCharsets.UTF_8));
         command.setProcessor(ServerCommands::infoCommand);
+        command.setFullName(new Sds("INFO", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -124,6 +137,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("keys", StandardCharsets.UTF_8));
         command.setProcessor(GenericCommands::keysCommand);
+        command.setFullName(new Sds("KEYS", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -132,6 +146,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("llen", StandardCharsets.UTF_8));
         command.setProcessor(ListCommands::llenCommand);
+        command.setFullName(new Sds("LLEN", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -140,6 +155,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("lpush", StandardCharsets.UTF_8));
         command.setProcessor(ListCommands::lpushCommand);
+        command.setFullName(new Sds("LPUSH", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -148,6 +164,7 @@ public class Commands {
         command.setSince("2.2.0");
         command.setDeclaredName(new Sds("lpushx", StandardCharsets.UTF_8));
         command.setProcessor(ListCommands::lpushxCommand);
+        command.setFullName(new Sds("LPUSHX", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -156,6 +173,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("lrange", StandardCharsets.UTF_8));
         command.setProcessor(ListCommands::lrangeCommand);
+        command.setFullName(new Sds("LRANGE", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -164,6 +182,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("lrem", StandardCharsets.UTF_8));
         command.setProcessor(ListCommands::lremCommand);
+        command.setFullName(new Sds("LREM", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -172,6 +191,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("mget", StandardCharsets.UTF_8));
         command.setProcessor(StringCommands::mgetCommand);
+        command.setFullName(new Sds("MGET", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -180,6 +200,7 @@ public class Commands {
         command.setSince("1.0.1");
         command.setDeclaredName(new Sds("mset", StandardCharsets.UTF_8));
         command.setProcessor(StringCommands::msetCommand);
+        command.setFullName(new Sds("MSET", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -188,6 +209,7 @@ public class Commands {
         command.setSince("2.8.9");
         command.setDeclaredName(new Sds("pfadd", StandardCharsets.UTF_8));
         command.setProcessor(HyperLogLogCommands::pfaddCommand);
+        command.setFullName(new Sds("PFADD", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -196,6 +218,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("ping", StandardCharsets.UTF_8));
         command.setProcessor(ConnectionCommands::pingCommand);
+        command.setFullName(new Sds("PING", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -204,6 +227,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("quit", StandardCharsets.UTF_8));
         command.setProcessor(ConnectionCommands::quitCommand);
+        command.setFullName(new Sds("QUIT", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -212,6 +236,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("rpush", StandardCharsets.UTF_8));
         command.setProcessor(ListCommands::rpushCommand);
+        command.setFullName(new Sds("RPUSH", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -220,6 +245,7 @@ public class Commands {
         command.setSince("2.2.0");
         command.setDeclaredName(new Sds("rpushx", StandardCharsets.UTF_8));
         command.setProcessor(ListCommands::rpushxCommand);
+        command.setFullName(new Sds("RPUSHX", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -228,6 +254,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("sadd", StandardCharsets.UTF_8));
         command.setProcessor(SetCommands::saddCommand);
+        command.setFullName(new Sds("SADD", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -236,6 +263,7 @@ public class Commands {
         command.setSince("2.8.0");
         command.setDeclaredName(new Sds("scan", StandardCharsets.UTF_8));
         command.setProcessor(GenericCommands::scanCommand);
+        command.setFullName(new Sds("SCAN", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -244,6 +272,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("select", StandardCharsets.UTF_8));
         command.setProcessor(ConnectionCommands::selectCommand);
+        command.setFullName(new Sds("SELECT", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -252,6 +281,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("set", StandardCharsets.UTF_8));
         command.setProcessor(StringCommands::setCommand);
+        command.setFullName(new Sds("SET", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -260,6 +290,7 @@ public class Commands {
         command.setSince("2.0.0");
         command.setDeclaredName(new Sds("setex", StandardCharsets.UTF_8));
         command.setProcessor(StringCommands::setexCommand);
+        command.setFullName(new Sds("SETEX", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -268,6 +299,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("setnx", StandardCharsets.UTF_8));
         command.setProcessor(StringCommands::setnxCommand);
+        command.setFullName(new Sds("SETNX", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -276,6 +308,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("srem", StandardCharsets.UTF_8));
         command.setProcessor(SetCommands::sremCommand);
+        command.setFullName(new Sds("SREM", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -284,6 +317,7 @@ public class Commands {
         command.setSince("2.8.0");
         command.setDeclaredName(new Sds("sscan", StandardCharsets.UTF_8));
         command.setProcessor(SetCommands::sscanCommand);
+        command.setFullName(new Sds("SSCAN", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -292,6 +326,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("ttl", StandardCharsets.UTF_8));
         command.setProcessor(GenericCommands::ttlCommand);
+        command.setFullName(new Sds("TTL", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -300,6 +335,7 @@ public class Commands {
         command.setSince("1.0.0");
         command.setDeclaredName(new Sds("type", StandardCharsets.UTF_8));
         command.setProcessor(GenericCommands::typeCommand);
+        command.setFullName(new Sds("TYPE", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -308,6 +344,7 @@ public class Commands {
         command.setSince("1.2.0");
         command.setDeclaredName(new Sds("zadd", StandardCharsets.UTF_8));
         command.setProcessor(SortedSetCommands::zaddCommand);
+        command.setFullName(new Sds("ZADD", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -316,6 +353,7 @@ public class Commands {
         command.setSince("1.2.0");
         command.setDeclaredName(new Sds("zrem", StandardCharsets.UTF_8));
         command.setProcessor(SortedSetCommands::zremCommand);
+        command.setFullName(new Sds("ZREM", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();
@@ -324,6 +362,7 @@ public class Commands {
         command.setSince("1.2.0");
         command.setDeclaredName(new Sds("zrevrange", StandardCharsets.UTF_8));
         command.setProcessor(SortedSetCommands::zrevrangeCommand);
+        command.setFullName(new Sds("ZREVRANGE", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         REDIS_COMMANDS = redisCommands.toArray(new RedisCommand[0]);

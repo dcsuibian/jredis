@@ -82,6 +82,7 @@ public class CommandHandler extends ChannelInboundHandlerAdapter {
         client.setChannelHandlerContext(ctx);
         for (RedisCommand redisCommand : Commands.REDIS_COMMANDS) {
             if (redisCommand.getDeclaredName().equals(command)) {
+                client.setCommand(redisCommand);
                 redisCommand.getProcessor().process(client);
                 return;
             }

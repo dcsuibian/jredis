@@ -1,5 +1,6 @@
 package com.dcsuibian.jredis.server;
 
+import com.dcsuibian.jredis.command.RedisCommand;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -20,4 +21,6 @@ public class RedisClient {
     private boolean authenticated;
     private RedisServer server;
     private ChannelHandlerContext channelHandlerContext;
+    private RedisCommand command;
+    private int respVersion = 2;
 }

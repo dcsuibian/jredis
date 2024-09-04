@@ -3,13 +3,15 @@ package com.dcsuibian.jredis.datastructure;
 import lombok.Getter;
 import lombok.Setter;
 
+@Getter
+@Setter
 public class ZSet {
-    private final Dictionary<Sds, Double> dict;
-    private final ZSkipList zsl;
+    private final Dictionary<Sds, Double> dictionary;
+    private final ZSkipList zSkipList;
 
     public ZSet() {
-        this.dict = new Dictionary<>();
-        this.zsl = new ZSkipList();
+        this.dictionary = new Dictionary<>();
+        this.zSkipList = new ZSkipList();
     }
 }
 

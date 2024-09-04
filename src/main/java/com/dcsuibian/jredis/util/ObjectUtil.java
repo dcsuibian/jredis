@@ -1,5 +1,6 @@
 package com.dcsuibian.jredis.util;
 
+import com.dcsuibian.jredis.datastructure.ListPack;
 import com.dcsuibian.jredis.datastructure.LongContainer;
 import com.dcsuibian.jredis.network.resp2.RespSimpleError;
 import com.dcsuibian.jredis.server.RedisClient;
@@ -27,5 +28,19 @@ public class ObjectUtil {
             c.getChannelHandlerContext().writeAndFlush(new RespSimpleError(message.getBytes(StandardCharsets.UTF_8)));
             return false;
         }
+    }
+
+    private static RedisObject createObject(RedisObject.Type type, Object value) {
+        RedisObject o = new RedisObject();
+        o.setType(type);
+        o.setValue(value);
+        return o;
+    }
+
+    public static RedisObject createHashObject() {
+        ListPack listPack = new ListPack(0);
+        RedisObject o = createObject(RedisObject.Type.HASH, listPack);
+        o.setEncoding(RedisObject.Encoding.LIST_PACK);
+        return o;
     }
 }

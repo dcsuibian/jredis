@@ -44,11 +44,7 @@ public class ListCommands {
     private static void listTypePush(RedisObject subject, byte[] value, int where) {
         if (RedisObject.Encoding.QUICK_LIST == subject.getEncoding()) {
             QuickList ql = (QuickList) subject.getValue();
-            if (LIST_HEAD == where) {
-                ql.addHead(value);
-            } else {
-                ql.addTail(value);
-            }
+            // TODO implement
         } else {
             throw new RuntimeException("Unknown list encoding");
         }
@@ -81,6 +77,15 @@ public class ListCommands {
             return;
         }
         // TODO implement
+    }
+
+    private static int listTypeLength(RedisObject subject) {
+        if (RedisObject.Encoding.QUICK_LIST == subject.getEncoding()) {
+            QuickList ql = (QuickList) subject.getValue();
+            return ql.size();
+        } else {
+            throw new RuntimeException("Unknown list encoding");
+        }
     }
 
     public static void lremCommand(RedisClient c) {

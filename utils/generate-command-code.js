@@ -156,6 +156,7 @@ async function main() {
     content += `        command.setSince("${command.description['since']}");\n`
     content += `        command.setDeclaredName(new Sds("${commandName}", StandardCharsets.UTF_8));\n`
     content += `        command.setProcessor(${group}Commands::${commandName}Command);\n`
+    content += `        command.setFullName(new Sds("${command.fullName}", StandardCharsets.UTF_8));\n`
     content += `        redisCommands.add(command);\n`
   }
   content += '\n'

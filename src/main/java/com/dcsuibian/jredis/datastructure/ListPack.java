@@ -101,6 +101,8 @@ public class ListPack {
     private static final int BEFORE = 0;
     private static final int AFTER = 1;
     private static final int REPLACE = 2;
+
+    private static final int MAX_SAFE_SIZE = (1 << 30);
     //endregion
     private byte[] content;
 
@@ -538,6 +540,10 @@ public class ListPack {
         return count;
     }
 
+    public int size() {
+        return getLength();
+    }
+
     public void prepend(byte[] s) {
         BytePointer p = first();
         if (p == null) {
@@ -610,5 +616,9 @@ public class ListPack {
             return result;
         }
         return null;
+    }
+
+    public boolean isSafeToAdd(int add) {
+        return this.getTotalBytes() + add <= MAX_SAFE_SIZE;
     }
 }

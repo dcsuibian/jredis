@@ -1,23 +1,25 @@
 package com.dcsuibian.jredis.datastructure;
 
-import java.util.LinkedList;
-
 public class QuickList {
-    private final LinkedList<byte[]> content;
+    private static final class Node {
+        private Node prev;
+        private Node next;
+        private ListPack entry;
+        private int count;
+    }
+
+    private Node head;
+    private Node tail;
+    private long count;
+    private long length; /* number of nodes */
 
     public QuickList() {
-        content = new LinkedList<>();
-    }
-
-    public void addHead(byte[] value) {
-        content.addFirst(value);
-    }
-
-    public void addTail(byte[] value) {
-        content.addLast(value);
+        this.head = this.tail = null;
+        this.length = 0;
+        this.count = 0;
     }
 
     public int size() {
-        return content.size();
+        return (int) this.count;
     }
 }
