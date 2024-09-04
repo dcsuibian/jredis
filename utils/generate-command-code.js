@@ -46,6 +46,7 @@ const SUPPORTED_COMMANDS = [
   'expiretime',
   'pexpiretime',
   'psetex',
+  'msetnx',
 ]
 
 const GROUPS = {

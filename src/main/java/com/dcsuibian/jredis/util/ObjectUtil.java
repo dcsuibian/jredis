@@ -45,6 +45,20 @@ public class ObjectUtil {
         }
     }
 
+    public static boolean getLongFromObjectOrReply(RedisClient c, RedisObject o, LongContainer target, String message) {
+        if (RedisObject.Type.STRING != o.getType()) {
+            c.getChannelHandlerContext().writeAndFlush(new RespSimpleError("value is not an integer or out of range".getBytes(StandardCharsets.UTF_8)));
+            return false;
+        }
+        if (RedisObject.Encoding.INTEGER == o.getEncoding()) {
+            target.setValue((Long) o.getValue());
+            return true;
+        } else {
+            Sds sds = (Sds) o.getValue();
+            return getLongFromBytesOrReply(c, sds.getData(), target, message);
+        }
+    }
+
     private static RedisObject createObject(RedisObject.Type type, Object value) {
         RedisObject o = new RedisObject();
         o.setType(type);

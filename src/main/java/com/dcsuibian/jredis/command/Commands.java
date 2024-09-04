@@ -213,6 +213,15 @@ public class Commands {
         redisCommands.add(command);
 
         command = new RedisCommand();
+        command.setSummary("Set multiple keys to multiple values, only if none of the keys exist");
+        command.setComplexity("O(N) where N is the number of keys to set.");
+        command.setSince("1.0.1");
+        command.setDeclaredName(new Sds("msetnx", StandardCharsets.UTF_8));
+        command.setProcessor(StringCommands::msetnxCommand);
+        command.setFullName(new Sds("MSETNX", StandardCharsets.UTF_8));
+        redisCommands.add(command);
+
+        command = new RedisCommand();
         command.setSummary("Get the expiration Unix timestamp for a key in milliseconds");
         command.setComplexity("O(1)");
         command.setSince("7.0.0");

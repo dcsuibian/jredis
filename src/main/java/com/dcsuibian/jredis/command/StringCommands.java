@@ -2,9 +2,9 @@ package com.dcsuibian.jredis.command;
 
 import com.dcsuibian.jredis.datastructure.*;
 import com.dcsuibian.jredis.network.RespObject;
-import com.dcsuibian.jredis.network.resp2.RespSimpleString;
+import com.dcsuibian.jredis.network.resp2.RespArray;
+import com.dcsuibian.jredis.network.resp2.RespBulkString;
 import com.dcsuibian.jredis.server.*;
-import io.netty.channel.ChannelHandlerContext;
 
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
@@ -34,7 +34,6 @@ public class StringCommands {
     private static final int OBJ_PX_AT = 1 << 7;
     private static final int OBJ_PERSIST = 1 << 8;
 
-    //region get
     private static boolean getGenericCommand(RedisClient c) {
         RedisObject o;
         if (null == (o = lookupKeyReadOrReply(c, c.getArgs()[1], SharedObjects.NULL[c.getRespVersion()]))) {
@@ -56,7 +55,6 @@ public class StringCommands {
     public static void getCommand(RedisClient c) {
         getGenericCommand(c);
     }
-    //endregion
 
     private static boolean parseExtendedStringArgumentsOrReply(RedisClient c, IntContainer flags, TimeUnitContainer unit, BytesContainer expire, int commandType) {
         int i = commandType == COMMAND_GET ? 2 : 3;
@@ -192,27 +190,82 @@ public class StringCommands {
         setGenericCommand(c, OBJ_PX, c.getArgs()[1], c.getArgs()[3], c.getArgs()[2], TimeUnit.MILLISECONDS, null, null);
     }
 
+    private static void msetGenericCommand(RedisClient c, boolean nx) {
+        if (0 == c.getArgs().length % 2) {
+            addErrorArityReply(c);
+            return;
+        }
+        if (nx) {
+            for (int i = 1; i < c.getArgs().length; i += 2) {
+                if (lookupKeyWrite(c.getDatabase(), c.getArgs()[i]) != null) {
+                    addReply(c, SharedObjects.ZERO);
+                    return;
+                }
+            }
+        }
+        for (int i = 1; i < c.getArgs().length; i += 2) {
+            setKey(c, c.getDatabase(), c.getArgs()[i], c.getArgs()[i + 1], 0);
+        }
+        RedisServer server = RedisServer.get();
+        server.setDirty(server.getDirty() + (c.getArgs().length - 1) / 2);
+        addReply(c, nx ? SharedObjects.ONE : SharedObjects.OK);
+    }
+
     public static void msetCommand(RedisClient c) {
-        // TODO implement
-        ChannelHandlerContext ctx = c.getChannelHandlerContext();
-        ctx.writeAndFlush(RespSimpleString.OK);
+        msetGenericCommand(c, false);
+    }
+
+    public static void msetnxCommand(RedisClient c) {
+        msetGenericCommand(c, true);
     }
 
     public static void mgetCommand(RedisClient c) {
-        // TODO implement
-        ChannelHandlerContext ctx = c.getChannelHandlerContext();
-        ctx.writeAndFlush(RespSimpleString.OK);
+        RespObject[] array = new RespObject[c.getArgs().length - 1];
+        for (int i = 1; i < c.getArgs().length; i++) {
+            RedisObject o = lookupKeyRead(c.getDatabase(), c.getArgs()[i]);
+            if (null == o) {
+                array[i - 1] = SharedObjects.NULL[c.getRespVersion()];
+            } else {
+                if (RedisObject.Type.STRING != o.getType()) {
+                    array[i - 1] = SharedObjects.NULL[c.getRespVersion()];
+                } else {
+                    array[i - 1] = new RespBulkString(((Sds) o.getValue()).getData());
+                }
+            }
+        }
+        addReply(c, new RespArray(array));
+    }
+
+    private static void incrDecrCommand(RedisClient c, long increment) {
+        RedisObject o = lookupKeyWrite(c.getDatabase(), c.getArgs()[1]);
+        if (isWrongType(c, o, RedisObject.Type.STRING)) {
+            return;
+        }
+        LongContainer valueContainer = new LongContainer();
+        if (!getLongFromObjectOrReply(c, o, valueContainer, null)) {
+            return;
+        }
+        long oldValue = valueContainer.getValue();
+        if ((increment < 0 && oldValue < 0 && increment < (Long.MIN_VALUE - oldValue)) || (increment > 0 && oldValue > 0 && increment > (Long.MAX_VALUE - oldValue))) {
+            addErrorReply(c, "increment or decrement would overflow");
+            return;
+        }
+        long value = oldValue + increment;
+        if (RedisObject.Encoding.INTEGER == o.getEncoding()) {
+            o.setValue(value);
+        } else {
+            o.setValue(new Sds(Long.toString(value).getBytes(StandardCharsets.UTF_8)));
+        }
+        RedisServer server = RedisServer.get();
+        server.setDirty(server.getDirty() + 1);
+        addLongReply(c, value);
     }
 
     public static void incrCommand(RedisClient c) {
-        // TODO implement
-        ChannelHandlerContext ctx = c.getChannelHandlerContext();
-        ctx.writeAndFlush(RespSimpleString.OK);
+        incrDecrCommand(c, 1);
     }
 
     public static void decrCommand(RedisClient c) {
-        // TODO implement
-        ChannelHandlerContext ctx = c.getChannelHandlerContext();
-        ctx.writeAndFlush(RespSimpleString.OK);
+        incrDecrCommand(c, -1);
     }
 }
