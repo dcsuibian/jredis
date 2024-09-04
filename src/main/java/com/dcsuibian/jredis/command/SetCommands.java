@@ -50,7 +50,9 @@ public class SetCommands {
             Sds key = new Sds(value);
             if (dict.containsKey(key)) {
                 dict.remove(key);
-                dict.resize(); // TODO: resize when needed
+                if (dict.needsResize()) {
+                    dict.resize();
+                }
                 return true;
             } else {
                 return false;

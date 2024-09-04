@@ -292,6 +292,12 @@ public class Dictionary<K, V> {
         return entrySet;
     }
 
+    public boolean needsResize() {
+        int slots = slots();
+        int used = size();
+        return (slots > DICTIONARY_INITIAL_SIZE && (used * 100 / slots < 10));
+    }
+
     public void clear() {
         tableReset(0);
         tableReset(1);
@@ -309,5 +315,9 @@ public class Dictionary<K, V> {
         if (0 == pauseRehash) {
             rehash(1);
         }
+    }
+
+    private int slots() {
+        return dictionarySize(sizeExp[0]) + dictionarySize(sizeExp[1]);
     }
 }

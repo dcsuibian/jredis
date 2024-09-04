@@ -9,7 +9,7 @@ import lombok.Setter;
 @Setter
 public class RedisObject {
     public enum Type {
-        STRING, LIST, SET, Z_SET, HASH, MODULE, STREAM
+        STRING, LIST, SET, Z_SET, HASH, HYPER_LOG_LOG, STREAM,
     }
 
     public enum Encoding {
@@ -25,7 +25,7 @@ public class RedisObject {
     }
 
     public RedisObject(HyperLogLog hyperLogLog) {
-        this.type = Type.STRING;
+        this.type = Type.HYPER_LOG_LOG;
         this.encoding = Encoding.HYPER_LOG_LOG;
         this.value = hyperLogLog;
     }

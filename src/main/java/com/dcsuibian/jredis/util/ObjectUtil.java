@@ -1,7 +1,9 @@
 package com.dcsuibian.jredis.util;
 
+import com.dcsuibian.jredis.datastructure.IntContainer;
 import com.dcsuibian.jredis.datastructure.ListPack;
 import com.dcsuibian.jredis.datastructure.LongContainer;
+import com.dcsuibian.jredis.datastructure.Sds;
 import com.dcsuibian.jredis.network.resp2.RespSimpleError;
 import com.dcsuibian.jredis.server.RedisClient;
 import com.dcsuibian.jredis.server.RedisObject;
@@ -15,6 +17,19 @@ public class ObjectUtil {
             return true;
         }
         return false;
+    }
+
+    public static boolean getIntFromBytesOrReply(RedisClient c, byte[] bytes, IntContainer target, String message) {
+        try {
+            target.setValue(Integer.parseInt(new String(bytes, StandardCharsets.UTF_8)));
+            return true;
+        } catch (NumberFormatException e) {
+            if (null == message) {
+                message = "value is not an integer or out of range";
+            }
+            c.getChannelHandlerContext().writeAndFlush(new RespSimpleError(message.getBytes(StandardCharsets.UTF_8)));
+            return false;
+        }
     }
 
     public static boolean getLongFromBytesOrReply(RedisClient c, byte[] bytes, LongContainer target, String message) {
@@ -41,6 +56,12 @@ public class ObjectUtil {
         ListPack listPack = new ListPack(0);
         RedisObject o = createObject(RedisObject.Type.HASH, listPack);
         o.setEncoding(RedisObject.Encoding.LIST_PACK);
+        return o;
+    }
+
+    public static RedisObject createStringObject(byte[] value) {
+        RedisObject o = createObject(RedisObject.Type.STRING, new Sds(value));
+        o.setEncoding(RedisObject.Encoding.SDS);
         return o;
     }
 }

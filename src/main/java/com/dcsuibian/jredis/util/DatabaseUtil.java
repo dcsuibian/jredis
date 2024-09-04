@@ -1,11 +1,13 @@
 package com.dcsuibian.jredis.util;
 
+import com.dcsuibian.jredis.datastructure.Dictionary;
 import com.dcsuibian.jredis.datastructure.LongContainer;
 import com.dcsuibian.jredis.datastructure.Sds;
 import com.dcsuibian.jredis.network.RespObject;
 import com.dcsuibian.jredis.server.RedisClient;
 import com.dcsuibian.jredis.server.RedisDatabase;
 import com.dcsuibian.jredis.server.RedisObject;
+import com.dcsuibian.jredis.server.RedisServer;
 
 import java.nio.charset.StandardCharsets;
 
@@ -82,6 +84,11 @@ public class DatabaseUtil {
         return db.getExpires().get(sds);
     }
 
+    public static void setExpire(RedisClient c, RedisDatabase db, byte[] key, long when) {
+        Sds sds = new Sds(key);
+        db.getExpires().put(sds, when);
+    }
+
     public static boolean isKeyExpired(RedisDatabase db, byte[] key) {
         long when = getExpire(db, key);
         if (when < 0) {
@@ -117,6 +124,12 @@ public class DatabaseUtil {
         db.getDictionary().put(sds, value);
     }
 
+    public static void dbOverwrite(RedisDatabase db, byte[] key, RedisObject value) {
+        Sds sds = new Sds(key);
+        db.getDictionary().put(sds, value);
+        db.getExpires().remove(sds);
+    }
+
     public static boolean parseScanCursorOrReply(RedisClient c, byte[] bytes, LongContainer cursor) {
         try {
             cursor.setValue(Long.parseLong(new String(bytes, StandardCharsets.UTF_8)));
@@ -125,5 +138,34 @@ public class DatabaseUtil {
             addErrorReply(c, "invalid cursor");
             return false;
         }
+    }
+
+    private static boolean dbGenericDelete(RedisDatabase db, byte[] key, boolean async) {
+        db.getDictionary().remove(new Sds(key));
+        db.getExpires().remove(new Sds(key));
+        return true;
+    }
+
+    public static boolean deleteExpire(RedisDatabase db, byte[] key) {
+        Dictionary<Sds, Long> expires = db.getExpires();
+        if (expires.containsKey(new Sds(key))) {
+            expires.remove(new Sds(key));
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    public static boolean dbSyncDelete(RedisDatabase db, byte[] key) {
+        return dbGenericDelete(db, key, false);
+    }
+
+    public static boolean dbAsyncDelete(RedisDatabase db, byte[] key) {
+        return dbGenericDelete(db, key, true);
+    }
+
+    public static boolean dbDelete(RedisDatabase db, byte[] key) {
+        RedisServer server = RedisServer.get();
+        return dbGenericDelete(db, key, server.isLazyFreeLazyServerDelete());
     }
 }

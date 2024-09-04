@@ -42,6 +42,10 @@ const SUPPORTED_COMMANDS = [
   'lpushx',
   'rpushx',
   'llen',
+  'pttl',
+  'expiretime',
+  'pexpiretime',
+  'psetex',
 ]
 
 const GROUPS = {

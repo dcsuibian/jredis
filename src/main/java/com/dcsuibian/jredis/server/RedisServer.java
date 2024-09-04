@@ -26,11 +26,19 @@ import java.util.stream.Collectors;
 @Setter
 @Getter
 public class RedisServer {
-    public static final ThreadLocal<RedisServer> THREAD_LOCAL = new ThreadLocal<>();
-    private volatile boolean running = false;
-    private int port;
+    //region
+    private boolean clusterEnabled = false;
+    private boolean lazyFreeLazyServerDelete = false;
+    private int dirty = 0;
     private RedisDatabase[] databases;
+    private int port;
+    //endregion
 
+    //region ThreadLocal
+    public static final ThreadLocal<RedisServer> THREAD_LOCAL = new ThreadLocal<>();
+    //endregion
+
+    private volatile boolean running = false;
     private EventLoopGroup boss;
     private EventLoopGroup worker;
     private EventLoopGroup main;
@@ -59,8 +67,7 @@ public class RedisServer {
 
     public RedisServer(InputStream inputStream) {
         // This solution converts different line breaks (like \r\n) to \n.
-        this(new BufferedReader(new InputStreamReader(inputStream))
-                .lines().parallel().collect(Collectors.joining("\n")));
+        this(new BufferedReader(new InputStreamReader(inputStream)).lines().parallel().collect(Collectors.joining("\n")));
     }
 
     public void start() {
@@ -107,5 +114,9 @@ public class RedisServer {
             worker.shutdownGracefully();
             main.shutdownGracefully();
         }
+    }
+
+    public static RedisServer get() {
+        return THREAD_LOCAL.get();
     }
 }

@@ -78,6 +78,15 @@ public class Commands {
         redisCommands.add(command);
 
         command = new RedisCommand();
+        command.setSummary("Get the expiration Unix timestamp for a key");
+        command.setComplexity("O(1)");
+        command.setSince("7.0.0");
+        command.setDeclaredName(new Sds("expiretime", StandardCharsets.UTF_8));
+        command.setProcessor(GenericCommands::expiretimeCommand);
+        command.setFullName(new Sds("EXPIRETIME", StandardCharsets.UTF_8));
+        redisCommands.add(command);
+
+        command = new RedisCommand();
         command.setSummary("Get the value of a key");
         command.setComplexity("O(1)");
         command.setSince("1.0.0");
@@ -204,6 +213,15 @@ public class Commands {
         redisCommands.add(command);
 
         command = new RedisCommand();
+        command.setSummary("Get the expiration Unix timestamp for a key in milliseconds");
+        command.setComplexity("O(1)");
+        command.setSince("7.0.0");
+        command.setDeclaredName(new Sds("pexpiretime", StandardCharsets.UTF_8));
+        command.setProcessor(GenericCommands::pexpiretimeCommand);
+        command.setFullName(new Sds("PEXPIRETIME", StandardCharsets.UTF_8));
+        redisCommands.add(command);
+
+        command = new RedisCommand();
         command.setSummary("Adds the specified elements to the specified HyperLogLog.");
         command.setComplexity("O(1) to add every element.");
         command.setSince("2.8.9");
@@ -219,6 +237,24 @@ public class Commands {
         command.setDeclaredName(new Sds("ping", StandardCharsets.UTF_8));
         command.setProcessor(ConnectionCommands::pingCommand);
         command.setFullName(new Sds("PING", StandardCharsets.UTF_8));
+        redisCommands.add(command);
+
+        command = new RedisCommand();
+        command.setSummary("Set the value and expiration in milliseconds of a key");
+        command.setComplexity("O(1)");
+        command.setSince("2.6.0");
+        command.setDeclaredName(new Sds("psetex", StandardCharsets.UTF_8));
+        command.setProcessor(StringCommands::psetexCommand);
+        command.setFullName(new Sds("PSETEX", StandardCharsets.UTF_8));
+        redisCommands.add(command);
+
+        command = new RedisCommand();
+        command.setSummary("Get the time to live for a key in milliseconds");
+        command.setComplexity("O(1)");
+        command.setSince("2.6.0");
+        command.setDeclaredName(new Sds("pttl", StandardCharsets.UTF_8));
+        command.setProcessor(GenericCommands::pttlCommand);
+        command.setFullName(new Sds("PTTL", StandardCharsets.UTF_8));
         redisCommands.add(command);
 
         command = new RedisCommand();

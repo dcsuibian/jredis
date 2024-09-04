@@ -96,10 +96,55 @@ public class GenericCommands {
         scanGenericCommand(c, null, cursor.getValue());
     }
 
+    /**
+     * Implements TTL, PTTL, EXPIRETIME and PEXPIRETIME
+     */
+    private static void ttlGenericCommand(RedisClient c, boolean outputMs, boolean outputAbs) {
+        if (null == lookupKeyReadWithFlags(c.getDatabase(), c.getArgs()[1], LOOKUP_NO_TOUCH)) {
+            addLongReply(c, -2);
+            return;
+        }
+        long expire = getExpire(c.getDatabase(), c.getArgs()[1]);
+        long ttl = -1;
+        if (-1 != expire) {
+            ttl = outputAbs ? expire : expire - System.currentTimeMillis();
+            if (ttl < 0) {
+                ttl = 0;
+            }
+        }
+        if (-1 == ttl) {
+            addLongReply(c, -1);
+        } else {
+            addLongReply(c, outputMs ? ttl : ((ttl + 500) / 1000));
+        }
+    }
+
+    /**
+     * TTL key
+     */
     public static void ttlCommand(RedisClient c) {
-        // TODO implement
-        ChannelHandlerContext ctx = c.getChannelHandlerContext();
-        ctx.writeAndFlush(RespSimpleString.OK);
+        ttlGenericCommand(c, false, false);
+    }
+
+    /**
+     * PTTL key
+     */
+    public static void pttlCommand(RedisClient c) {
+        ttlGenericCommand(c, true, false);
+    }
+
+    /**
+     * EXPIRETIME key
+     */
+    public static void expiretimeCommand(RedisClient c) {
+        ttlGenericCommand(c, false, true);
+    }
+
+    /**
+     * PEXPIRETIME key
+     */
+    public static void pexpiretimeCommand(RedisClient c) {
+        ttlGenericCommand(c, true, true);
     }
 
     public static void typeCommand(RedisClient c) {
@@ -124,6 +169,9 @@ public class GenericCommands {
                     break;
                 case HASH:
                     type = "hash";
+                    break;
+                case HYPER_LOG_LOG:
+                    type = "hyperloglog";
                     break;
                 case STREAM:
                     type = "stream";
