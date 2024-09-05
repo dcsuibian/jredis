@@ -2,6 +2,7 @@ package com.dcsuibian.jredis.util;
 
 import com.dcsuibian.jredis.datastructure.Sds;
 import com.dcsuibian.jredis.network.RespObject;
+import com.dcsuibian.jredis.network.resp2.RespArray;
 import com.dcsuibian.jredis.network.resp2.RespBulkString;
 import com.dcsuibian.jredis.network.resp2.RespInteger;
 import com.dcsuibian.jredis.network.resp2.RespSimpleError;
@@ -48,5 +49,9 @@ public class NetworkUtil {
 
     public static void addErrorExpireTimeReply(RedisClient c) {
         addErrorReply(c, "invalid expire time in '" + c.getCommand().getFullName().toString(StandardCharsets.UTF_8) + "' command");
+    }
+
+    public static void addArrayReply(RedisClient c, RespArray array) {
+        addReply(c, array);
     }
 }

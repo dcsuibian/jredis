@@ -1,5 +1,6 @@
 package com.dcsuibian.jredis.command;
 
+import com.dcsuibian.jredis.datastructure.Dictionary;
 import com.dcsuibian.jredis.datastructure.IntContainer;
 import com.dcsuibian.jredis.datastructure.LongContainer;
 import com.dcsuibian.jredis.datastructure.Sds;
@@ -15,10 +16,10 @@ import io.netty.channel.ChannelHandlerContext;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static com.dcsuibian.jredis.util.DatabaseUtil.*;
+import static com.dcsuibian.jredis.util.GenericUtil.match;
 import static com.dcsuibian.jredis.util.NetworkUtil.*;
 import static com.dcsuibian.jredis.util.ObjectUtil.getLongFromBytesOrReply;
 
@@ -184,15 +185,16 @@ public class GenericCommands {
     }
 
     public static void keysCommand(RedisClient c) {
-        // TODO Return the queried keys, not all keys
-        Set<Sds> keySet = c.getDatabase().getDictionary().keySet();
-        List<RespObject> list = new ArrayList<>();
-        for (Sds key : keySet) {
-            list.add(new RespBulkString(key.getData()));
+        byte[] pattern = c.getArgs()[1];
+        boolean allKeys = '*' == pattern[0] && 1 == pattern.length;
+        List<RespObject> respObjects = new ArrayList<>();
+        for (Dictionary.Entry<Sds, RedisObject> entry : c.getDatabase().getDictionary().entrySet()) {
+            Sds key = entry.getKey();
+            if (allKeys || match(pattern, key.getData(), false)) {
+                respObjects.add(new RespBulkString(key.getData()));
+            }
         }
-        RespArray respArray = new RespArray(list.toArray(new RespObject[0]));
-        ChannelHandlerContext ctx = c.getChannelHandlerContext();
-        ctx.writeAndFlush(respArray);
+        addArrayReply(c, new RespArray(respObjects.toArray(new RespObject[0])));
     }
 
     /**
