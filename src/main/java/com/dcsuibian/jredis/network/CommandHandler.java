@@ -13,9 +13,11 @@ import com.dcsuibian.jredis.server.RedisServer;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.ChannelInboundHandlerAdapter;
 import io.netty.util.AttributeKey;
+import lombok.extern.slf4j.Slf4j;
 
 import java.nio.charset.StandardCharsets;
 
+@Slf4j
 public class CommandHandler extends ChannelInboundHandlerAdapter {
     private final RedisServer redisServer;
 
@@ -29,6 +31,7 @@ public class CommandHandler extends ChannelInboundHandlerAdapter {
         RedisClient client = new RedisClient();
         client.setDatabase(redisServer.getDatabases()[0]);
         client.setServer(redisServer);
+        RedisServer.THREAD_LOCAL.set(redisServer);
         ctx.channel().attr(AttributeKey.valueOf("client")).set(client);
     }
 
@@ -79,10 +82,12 @@ public class CommandHandler extends ChannelInboundHandlerAdapter {
         client.setChannelHandlerContext(ctx);
         for (RedisCommand redisCommand : Commands.REDIS_COMMANDS) {
             if (redisCommand.getDeclaredName().equals(command)) {
+                client.setCommand(redisCommand);
                 redisCommand.getProcessor().process(client);
                 return;
             }
         }
+        log.error("unknown command: {}", command.toString(StandardCharsets.UTF_8));
         RespSimpleError error = new RespSimpleError("unknown command".getBytes(StandardCharsets.UTF_8));
         ctx.writeAndFlush(error);
     }

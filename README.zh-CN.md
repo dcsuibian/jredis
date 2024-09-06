@@ -9,5 +9,5 @@ JRedis是一个Java版的Redis服务端实现，主要用于测试环境。
 
 ## 用法
 
-请运行`src/test/java`中的`com.dcsuibian.jredis.server.RedisServerTests.main`。
+请运行`src/test/java`中的`com.dcsuibian.jredis.JRedisServerTests.main`。
 

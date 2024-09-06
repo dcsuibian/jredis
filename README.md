@@ -9,5 +9,5 @@ Currently still under development.
 
 ## Usage
 
-Please run `com.dcsuibian.jredis.server.RedisServerTests.main` in `src/test/java`.
+Please run `com.dcsuibian.jredis.JRedisServerTests.main` in `src/test/java`.
 

@@ -23,10 +23,4 @@ public class BytePointer {
     public void set(int index, byte value) {
         data[offset + index] = value;
     }
-
-    public byte[] getData(int i, int count) {
-        byte[] result = new byte[count];
-        System.arraycopy(data, offset + i, result, 0, count);
-        return result;
-    }
 }

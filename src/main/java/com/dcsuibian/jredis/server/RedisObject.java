@@ -8,10 +8,15 @@ import lombok.Setter;
 @Setter
 public class RedisObject {
     public enum Type {
-        SDS, DICTIONARY, INT_SET, SKIP_LIST, QUICK_LIST, LIST_PACK, HyperLogLog
+        STRING, LIST, SET, Z_SET, HASH, HYPER_LOG_LOG, STREAM,
+    }
+
+    public enum Encoding {
+        SDS, INTEGER, DICTIONARY, LINKED_LIST, INT_SET, STREAM, LIST_PACK, HYPER_LOG_LOG, QUICK_LIST, SKIP_LIST
     }
 
     private Type type;
+    private Encoding encoding;
     private int lru;
     private Object value;
 
@@ -19,7 +24,8 @@ public class RedisObject {
     }
 
     public RedisObject(HyperLogLog hyperLogLog) {
-        this.type = Type.HyperLogLog;
+        this.type = Type.HYPER_LOG_LOG;
+        this.encoding = Encoding.HYPER_LOG_LOG;
         this.value = hyperLogLog;
     }
 }
