@@ -9,6 +9,7 @@ import com.dcsuibian.jredis.server.RedisClient;
 import com.dcsuibian.jredis.server.RedisObject;
 
 import java.nio.charset.StandardCharsets;
+import java.util.LinkedList;
 
 public class ObjectUtil {
     public static boolean isWrongType(RedisClient c, RedisObject o, RedisObject.Type type) {
@@ -76,6 +77,13 @@ public class ObjectUtil {
     public static RedisObject createStringObject(byte[] value) {
         RedisObject o = createObject(RedisObject.Type.STRING, new Sds(value));
         o.setEncoding(RedisObject.Encoding.SDS);
+        return o;
+    }
+
+    public static RedisObject createQuickListObject() {
+        LinkedList<Sds> list = new LinkedList<>();
+        RedisObject o = createObject(RedisObject.Type.LIST, list);
+        o.setEncoding(RedisObject.Encoding.QUICK_LIST);
         return o;
     }
 }

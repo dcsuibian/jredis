@@ -1,7 +1,6 @@
 package com.dcsuibian.jredis.server;
 
 import com.dcsuibian.jredis.datastructure.HyperLogLog;
-import com.dcsuibian.jredis.datastructure.QuickList;
 import lombok.Getter;
 import lombok.Setter;
 
@@ -28,11 +27,5 @@ public class RedisObject {
         this.type = Type.HYPER_LOG_LOG;
         this.encoding = Encoding.HYPER_LOG_LOG;
         this.value = hyperLogLog;
-    }
-
-    public RedisObject(QuickList quickList) {
-        this.type = Type.LIST;
-        this.encoding = Encoding.QUICK_LIST;
-        this.value = quickList;
     }
 }
