@@ -9,8 +9,8 @@ import com.dcsuibian.jredis.server.*;
 import java.nio.charset.StandardCharsets;
 import java.util.concurrent.TimeUnit;
 
-import static com.dcsuibian.jredis.util.CompareUtil.equalsIgnoreCase;
 import static com.dcsuibian.jredis.util.DatabaseUtil.*;
+import static com.dcsuibian.jredis.util.GenericUtil.equalsIgnoreCase;
 import static com.dcsuibian.jredis.util.NetworkUtil.*;
 import static com.dcsuibian.jredis.util.ObjectUtil.*;
 

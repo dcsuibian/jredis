@@ -29,6 +29,7 @@ public class RedisServer {
     //region
     private boolean clusterEnabled = false;
     private boolean lazyFreeLazyServerDelete = false;
+    private int hashMaxListPackValue = 64;
     private int dirty = 0;
     private RedisDatabase[] databases;
     private int port;

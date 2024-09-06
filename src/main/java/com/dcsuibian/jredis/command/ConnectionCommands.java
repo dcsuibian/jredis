@@ -1,6 +1,7 @@
 package com.dcsuibian.jredis.command;
 
 import com.dcsuibian.jredis.datastructure.IntContainer;
+import com.dcsuibian.jredis.datastructure.Sds;
 import com.dcsuibian.jredis.network.resp2.RespSimpleString;
 import com.dcsuibian.jredis.server.RedisClient;
 import com.dcsuibian.jredis.server.RedisServer;
@@ -9,6 +10,7 @@ import io.netty.channel.ChannelHandlerContext;
 
 import java.nio.charset.StandardCharsets;
 
+import static com.dcsuibian.jredis.util.GenericUtil.equalsIgnoreCase;
 import static com.dcsuibian.jredis.util.NetworkUtil.addErrorReply;
 import static com.dcsuibian.jredis.util.NetworkUtil.addReply;
 import static com.dcsuibian.jredis.util.ObjectUtil.getIntFromBytesOrReply;
@@ -31,15 +33,15 @@ public class ConnectionCommands {
      */
     public static void authCommand(RedisClient c) {
         ChannelHandlerContext ctx = c.getChannelHandlerContext();
-        // TODO verify password
         c.setAuthenticated(true);
         ctx.writeAndFlush(RespSimpleString.OK);
     }
 
     public static void clientCommand(RedisClient c) {
-        // TODO implement
-        ChannelHandlerContext ctx = c.getChannelHandlerContext();
-        ctx.writeAndFlush(RespSimpleString.OK);
+        if (equalsIgnoreCase(c.getArgs()[1], "setname")) {
+            c.setName(new Sds(c.getArgs()[2]));
+        }
+        addReply(c, SharedObjects.OK);
     }
 
     private static boolean selectDb(RedisClient c, int id) {

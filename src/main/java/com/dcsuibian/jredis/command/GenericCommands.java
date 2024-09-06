@@ -1,5 +1,6 @@
 package com.dcsuibian.jredis.command;
 
+import com.dcsuibian.jredis.datastructure.Dictionary;
 import com.dcsuibian.jredis.datastructure.IntContainer;
 import com.dcsuibian.jredis.datastructure.LongContainer;
 import com.dcsuibian.jredis.datastructure.Sds;
@@ -9,16 +10,18 @@ import com.dcsuibian.jredis.network.resp2.RespBulkString;
 import com.dcsuibian.jredis.network.resp2.RespSimpleString;
 import com.dcsuibian.jredis.server.RedisClient;
 import com.dcsuibian.jredis.server.RedisObject;
+import com.dcsuibian.jredis.server.RedisServer;
 import com.dcsuibian.jredis.server.SharedObjects;
 import io.netty.channel.ChannelHandlerContext;
 
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 import java.util.concurrent.TimeUnit;
 
 import static com.dcsuibian.jredis.util.DatabaseUtil.*;
+import static com.dcsuibian.jredis.util.GenericUtil.equalsIgnoreCase;
+import static com.dcsuibian.jredis.util.GenericUtil.match;
 import static com.dcsuibian.jredis.util.NetworkUtil.*;
 import static com.dcsuibian.jredis.util.ObjectUtil.getLongFromBytesOrReply;
 
@@ -28,72 +31,59 @@ public class GenericCommands {
     public static final int EXPIRE_GT = (1 << 2);
     public static final int EXPIRE_LT = (1 << 3);
 
-    private static void scanGenericCommandCleanUp() {
-        // do nothing
-    }
-
-    public static void scanGenericCommand(RedisClient c, RedisObject o, long cursor) {
-        // TODO implement
-        ChannelHandlerContext ctx = c.getChannelHandlerContext();
-        ctx.writeAndFlush(RespSimpleString.OK);
-        return;
-//        LongContainer count = new LongContainer(10);
-//        Sds typeName = null;
-//        assert null == o || RedisObject.Type.SET == o.getType() || RedisObject.Type.HASH == o.getType() || RedisObject.Type.Z_SET == o.getType();
-//        int i = (null == o) ? 2 : 3;
-//        while (i < c.getArgs().length) {
-//            int j = c.getArgs().length - i;
-//            if (new String(c.getArgs()[i], StandardCharsets.UTF_8).equalsIgnoreCase("count") && j >= 2) {
-//                if (!getLongFromBytesOrReply(c, c.getArgs()[i + 1], count, null)) {
-//                    scanGenericCommandCleanUp();
-//                    return;
-//                }
-//                if (count.getValue() < 1) {
-//                    addErrorReply(c, SharedObjects.SYNTAX_ERROR);
-//                    scanGenericCommandCleanUp();
-//                    return;
-//                }
-//                i += 2;
-//            } else if (new String(c.getArgs()[i], StandardCharsets.UTF_8).equalsIgnoreCase("match") && j >= 2) {
-//                // TODO implement
-//            } else if (new String(c.getArgs()[i], StandardCharsets.UTF_8).equalsIgnoreCase("type") && null == o && j >= 2) {
-//                typeName = new Sds(c.getArgs()[i + 1]);
-//                i += 2;
-//            } else {
-//                addErrorReply(c, SharedObjects.SYNTAX_ERROR);
-//                scanGenericCommandCleanUp();
-//                return;
-//            }
-//            Dictionary<?, ?> dict = null;
-//            if (null == o) {
-//                dict = c.getDatabase().getDictionary();
-//            } else if (RedisObject.Type.SET == o.getType() && RedisObject.Encoding.DICTIONARY == o.getEncoding()) {
-//                dict = (Dictionary<?, ?>) o.getValue();
-//            } else if (RedisObject.Type.HASH == o.getType() && RedisObject.Encoding.DICTIONARY == o.getEncoding()) {
-//                dict = (Dictionary<?, ?>) o.getValue();
-//            } else if (RedisObject.Type.Z_SET == o.getType() && RedisObject.Encoding.SKIP_LIST == o.getEncoding()) {
-//                ZSet zSet = (ZSet) o.getValue();
-//                dict = zSet.getDictionary();
-//                count.setValue(count.getValue() * 2);
-//            }
-//            if (null != dict) {
-//
-//            } else if (RedisObject.Type.SET == o.getType()) {
-//
-//            } else if (RedisObject.Type.HASH == o.getType() || RedisObject.Type.Z_SET == o.getType()) {
-//
-//            } else {
-//                throw new RuntimeException("Not handled encoding in SCAN.");
-//            }
-//        }
-    }
-
     public static void scanCommand(RedisClient c) {
         LongContainer cursor = new LongContainer();
+        byte[] pattern = null;
+        LongContainer count = null;
         if (!parseScanCursorOrReply(c, c.getArgs()[1], cursor)) {
             return;
         }
-        scanGenericCommand(c, null, cursor.getValue());
+        if (0 != c.getArgs().length % 2 || c.getArgs().length > 6) {
+            addErrorArityReply(c);
+            return;
+        }
+        for (int i = 2; i < c.getArgs().length; i += 2) {
+            if (equalsIgnoreCase(c.getArgs()[i], "count")) {
+                count = new LongContainer();
+                if (!getLongFromBytesOrReply(c, c.getArgs()[i + 1], count, null)) {
+                    return;
+                }
+                if (count.getValue() < 1) {
+                    addErrorReply(c, SharedObjects.SYNTAX_ERROR);
+                    return;
+                }
+            } else if (equalsIgnoreCase(c.getArgs()[i], "match")) {
+                pattern = c.getArgs()[i + 1];
+            } else {
+                addErrorReply(c, SharedObjects.SYNTAX_ERROR);
+                return;
+            }
+        }
+        List<Sds> keys = new ArrayList<>();
+        for (Sds key : c.getDatabase().getDictionary().keySet()) {
+            if (null == pattern || match(pattern, key.getData(), false) && !expireIfNeeded(c.getDatabase(), key.getData(), 0)) {
+                keys.add(key);
+            }
+        }
+        keys.sort(Sds::compareTo);
+        int begin = (int) cursor.getValue();
+        int end;
+        if (null == count) {
+            end = keys.size();
+        } else {
+            end = Math.min(begin + (int) count.getValue(), keys.size());
+        }
+        if (begin >= end) {
+            end = 0;
+        }
+        RespObject[] result = new RespObject[2];
+        result[0] = new RespBulkString(String.valueOf(end).getBytes(StandardCharsets.UTF_8));
+        List<RespObject> keysRespObjects = new ArrayList<>();
+        for (int i = begin; i < end; i++) {
+            keysRespObjects.add(new RespBulkString(keys.get(i).getData()));
+        }
+        result[1] = new RespArray(keysRespObjects.toArray(new RespObject[0]));
+        addArrayReply(c, new RespArray(result));
     }
 
     /**
@@ -184,15 +174,16 @@ public class GenericCommands {
     }
 
     public static void keysCommand(RedisClient c) {
-        // TODO Return the queried keys, not all keys
-        Set<Sds> keySet = c.getDatabase().getDictionary().keySet();
-        List<RespObject> list = new ArrayList<>();
-        for (Sds key : keySet) {
-            list.add(new RespBulkString(key.getData()));
+        byte[] pattern = c.getArgs()[1];
+        boolean allKeys = '*' == pattern[0] && 1 == pattern.length;
+        List<RespObject> respObjects = new ArrayList<>();
+        for (Dictionary.Entry<Sds, RedisObject> entry : c.getDatabase().getDictionary().entrySet()) {
+            Sds key = entry.getKey();
+            if (allKeys || match(pattern, key.getData(), false)) {
+                respObjects.add(new RespBulkString(key.getData()));
+            }
         }
-        RespArray respArray = new RespArray(list.toArray(new RespObject[0]));
-        ChannelHandlerContext ctx = c.getChannelHandlerContext();
-        ctx.writeAndFlush(respArray);
+        addArrayReply(c, new RespArray(respObjects.toArray(new RespObject[0])));
     }
 
     /**
@@ -304,7 +295,16 @@ public class GenericCommands {
                 }
             }
         }
-        // TODO implement
+        RedisServer server = RedisServer.get();
+        if (checkAlreadyExpired(when.getValue())) {
+            dbDelete(c.getDatabase(), key);
+            server.setDirty(server.getDirty() + 1);
+            addReply(c, SharedObjects.ZERO);
+        } else {
+            setExpire(c, c.getDatabase(), key, when.getValue());
+            addReply(c, SharedObjects.ONE);
+            server.setDirty(server.getDirty() + 1);
+        }
     }
 
     /**
