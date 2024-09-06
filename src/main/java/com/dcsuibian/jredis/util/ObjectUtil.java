@@ -1,7 +1,7 @@
 package com.dcsuibian.jredis.util;
 
+import com.dcsuibian.jredis.datastructure.Dictionary;
 import com.dcsuibian.jredis.datastructure.IntContainer;
-import com.dcsuibian.jredis.datastructure.ListPack;
 import com.dcsuibian.jredis.datastructure.LongContainer;
 import com.dcsuibian.jredis.datastructure.Sds;
 import com.dcsuibian.jredis.network.resp2.RespSimpleError;
@@ -67,9 +67,9 @@ public class ObjectUtil {
     }
 
     public static RedisObject createHashObject() {
-        ListPack listPack = new ListPack(0);
-        RedisObject o = createObject(RedisObject.Type.HASH, listPack);
-        o.setEncoding(RedisObject.Encoding.LIST_PACK);
+        Dictionary<Sds, Sds> dict = new Dictionary<>();
+        RedisObject o = createObject(RedisObject.Type.HASH, dict);
+        o.setEncoding(RedisObject.Encoding.DICTIONARY);
         return o;
     }
 

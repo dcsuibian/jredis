@@ -1,6 +1,7 @@
 package com.dcsuibian.jredis.server;
 
 import com.dcsuibian.jredis.command.RedisCommand;
+import com.dcsuibian.jredis.datastructure.Sds;
 import io.netty.channel.ChannelHandlerContext;
 import lombok.Getter;
 import lombok.Setter;
@@ -13,7 +14,7 @@ public class RedisClient {
     private long id;
     private long flags;
     private RedisDatabase database;
-    private RedisObject name;
+    private Sds name;
     private byte[][] args;
     private User user;
     private Instant createTime;

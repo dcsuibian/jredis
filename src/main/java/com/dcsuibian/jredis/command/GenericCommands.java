@@ -10,6 +10,7 @@ import com.dcsuibian.jredis.network.resp2.RespBulkString;
 import com.dcsuibian.jredis.network.resp2.RespSimpleString;
 import com.dcsuibian.jredis.server.RedisClient;
 import com.dcsuibian.jredis.server.RedisObject;
+import com.dcsuibian.jredis.server.RedisServer;
 import com.dcsuibian.jredis.server.SharedObjects;
 import io.netty.channel.ChannelHandlerContext;
 
@@ -71,6 +72,9 @@ public class GenericCommands {
             end = keys.size();
         } else {
             end = Math.min(begin + (int) count.getValue(), keys.size());
+        }
+        if (begin >= end) {
+            end = 0;
         }
         RespObject[] result = new RespObject[2];
         result[0] = new RespBulkString(String.valueOf(end).getBytes(StandardCharsets.UTF_8));
@@ -291,7 +295,16 @@ public class GenericCommands {
                 }
             }
         }
-        // TODO implement
+        RedisServer server = RedisServer.get();
+        if (checkAlreadyExpired(when.getValue())) {
+            dbDelete(c.getDatabase(), key);
+            server.setDirty(server.getDirty() + 1);
+            addReply(c, SharedObjects.ZERO);
+        } else {
+            setExpire(c, c.getDatabase(), key, when.getValue());
+            addReply(c, SharedObjects.ONE);
+            server.setDirty(server.getDirty() + 1);
+        }
     }
 
     /**
